@@ -24,15 +24,21 @@ pip3 install --upgrade pyccat
 
 ***Read a file***
 ```bash
-ccat /tmp/teste.txt
+ccat /tmp/teste.json
 ```
+
+![Sample 001](images/sample_001.jpg)
 
 ***Read a file without table***
 ```bash
-ccat -nt /tmp/teste.txt
+ccat -nt /tmp/teste.json
 ```
+
+![Sample 002](images/sample_002.jpg)
 
 ***Just highlight the file***
 ```bash
-ccat -nt /tmp/teste.txt
+ccat -nt /tmp/teste.json
 ```
+
+![Sample 003](images/sample_003.jpg)
