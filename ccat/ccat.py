@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import json
 
+from pygments.lexers.data import JsonLexer
 from tabulate import tabulate
 import codecs
 
@@ -18,7 +19,7 @@ except (ValueError, ImportError) as e:
     raise Exception('You may need to run ccat from the root directory (which includes README.md)', e)
 
 
-import sys
+import sys, os
 from .util.color import Color
 
 
@@ -33,6 +34,11 @@ class ColorCat(object):
     def run(self):
 
         try:
+
+            fs = os.path.getsize(Configuration.filename)
+            if fs > (1024 * 1024 * 1024):
+                Color.pl("\n{!} {R}Error: File is to big. The maxim supported file size is 1GB{W}")
+                sys.exit(2)
 
             try:
                 lexer = get_lexer_for_filename(Configuration.filename)
@@ -57,17 +63,25 @@ class ColorCat(object):
                 except:
                     data = data.decode('latin-1')
 
+                if data.strip(' \r\n') == '':
+                    Color.pl("\n{!} {R}Error: File is empty{W}")
+                    sys.exit(2)
+
                 #try parse json
                 try:
                     tmp = json.loads(data)
                     data = json.dumps(tmp, sort_keys=False, indent=2)
+                    data = data.strip('\r\n')
+                    lexer = JsonLexer()
                 except:
                     pass
+
+                data = data.replace('\t', '  ')
 
                 data = highlight(
                     code=data,
                     lexer=lexer,
-                    formatter=formatter)
+                    formatter=formatter).strip('\r\n')
 
                 if Configuration.simple:
                     print(data)
