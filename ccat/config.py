@@ -73,13 +73,13 @@ class Configuration(object):
         except IOError as x:
             if x.errno == errno.EACCES:
                 Logger.pl('{!} {R}error: could not open file {O}permission denied{R}{W}\r\n')
-                Tools.exit_gracefully(1)
+                sys.exit(1)
             elif x.errno == errno.EISDIR:
                 Logger.pl('{!} {R}error: could not open file {O}it is an directory{R}{W}\r\n')
-                Tools.exit_gracefully(1)
+                sys.exit(1)
             else:
                 Logger.pl('{!} {R}error: could not openfile {W}\r\n')
-                Tools.exit_gracefully(1)
+                sys.exit(1)
 
         Configuration.simple = args.args.simple
         Configuration.no_tab = args.args.no_tab
