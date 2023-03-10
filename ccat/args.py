@@ -79,3 +79,9 @@ class Arguments(object):
                            help=Color.s(
                                'Specify verbosity level (default: {G}0{W}). Example: {G}-v{W}, {G}-vv{W}, {G}-vvv{W}'
                            ))
+
+        flags.add_argument('--version',
+                           action='store_true',
+                           default=False,
+                           dest=f'version',
+                           help=Color.s('show current version'))

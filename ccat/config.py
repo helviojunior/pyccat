@@ -33,7 +33,7 @@ class Configuration(object):
         '''
 
         Configuration.version = str(__version__)
-        Configuration.name = str(__name__)
+        Configuration.name = "CCat"
 
         # Only initialize this class once
         if Configuration.initialized:
@@ -54,6 +54,10 @@ class Configuration(object):
         from .args import Arguments
 
         args = Arguments()
+
+        if any(['--version' in word for word in sys.argv]):
+            Logger.pl(f' {Configuration.name} v{Configuration.version}\n')
+            sys.exit(0)
 
         a1 = sys.argv
         a1[0] = 'ccat'
