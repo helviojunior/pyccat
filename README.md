@@ -20,25 +20,36 @@ CCat officially supports Python 3.8+.
 pip3 install --upgrade pyccat
 ```
 
-## Getting stats
+## Executing
 
-***Read a file***
+**Regular linux cat**
+![cat](images/regular_cat.jpg)
+
+**Read a file**
 ```bash
 ccat /tmp/teste.json
 ```
 
 ![Sample 001](images/sample_001.jpg)
 
-***Read a file without table***
+**Read a file without table**
 ```bash
 ccat -nt /tmp/teste.json
 ```
 
 ![Sample 002](images/sample_002.jpg)
 
-***Just highlight the file***
+**Just highlight the file**
 ```bash
 ccat -s /tmp/teste.json
 ```
 
 ![Sample 003](images/sample_003.jpg)
+
+**Display only some lines**
+```bash
+ccat -nt -l 4:10 teste.json
+ccat -nt -l 2:2,4:10 teste.json
+```
+
+![Sample 004](images/sample_004.jpg)
