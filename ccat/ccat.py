@@ -150,13 +150,13 @@ class ColorCat(object):
                 else:
                     ldata = data.split('\n')
                     mc = len(f'{len(ldata)}')
-                    dot_line = (Color.s('  {W}%s{W}' % ColorCat.format_line_number('...', mc)), '')
+                    dot_line = (Color.s('  {W}%s{W} ' % ColorCat.format_line_number('...', mc)), '')
                     size = os.get_terminal_size()
                     max_c2_size = size.columns - 10 - mc
 
                     header = ['', 'File: %s' % Configuration.filename]
                     data = [
-                        (Color.s(' {W}{O}{D}%s{W}' % ColorCat.format_line_number(i + 1, mc)), l)
+                        (Color.s(' {W}{O}{D}%s{W} ' % ColorCat.format_line_number(i + 1, mc)), l)
                         if ColorCat.is_valid(i + 1) else dot_line
                         for i, l in enumerate(ldata)
                         if ColorCat.is_valid(i + 1) or ColorCat.is_dot(i + 1)
