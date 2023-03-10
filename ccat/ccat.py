@@ -140,7 +140,7 @@ class ColorCat(object):
 
                 ldata = [
                     l
-                    if ColorCat.is_highlight(i + 1) else Color.s('{GR}%s{W}' % ColorCat.escape_ansi(l))
+                    if ColorCat.is_highlight(i + 1) else Color.s('{GR}{D}%s{W}' % ColorCat.escape_ansi(l))
                     for i, l in enumerate(ldata)
                 ]
 
