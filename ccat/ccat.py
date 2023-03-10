@@ -179,7 +179,19 @@ class ColorCat(object):
                     if not ColorCat.is_valid(len(ldata)):
                         data += [dot_line]
 
-                    print(tabulate(data, header, tablefmt='ccat', maxcolwidths=[None, max_c2_size]))
+                    cols = {}
+
+                    # Available only at v0.9.0 and upper
+                    try:
+                        from tabulate.version import __version_tuple__ as tabv
+                        if tabv[0] > 0 and tabv[1] >= 9:
+                            cols = dict(
+                                maxcolwidths=[None, max_c2_size]
+                            )
+                    except:
+                        pass
+
+                    print(tabulate(data, header, tablefmt='ccat', **cols))
 
         except Exception as e:
             Color.pl("\n{!} {R}Error: {O}%s" % str(e))
