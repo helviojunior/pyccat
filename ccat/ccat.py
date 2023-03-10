@@ -48,7 +48,7 @@ class ColorCat(object):
         if len(Configuration.lines) == 0:
             return False
 
-        if ColorCat.is_valid(line - 1):
+        if ColorCat.is_valid(line):
             return False
 
         return any([

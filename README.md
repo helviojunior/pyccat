@@ -38,7 +38,7 @@ ccat -nt /tmp/teste.json
 
 ***Just highlight the file***
 ```bash
-ccat -nt /tmp/teste.json
+ccat -s /tmp/teste.json
 ```
 
 ![Sample 003](images/sample_003.jpg)
