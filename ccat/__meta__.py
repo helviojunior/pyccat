@@ -1,4 +1,4 @@
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 __title__ = "pyccat"
 __description__ = "Colored Cat is a syntax highlighter file reader."
 __url__ = "https://github.com/helviojunior/pyccat"
