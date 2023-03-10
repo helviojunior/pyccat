@@ -121,6 +121,9 @@ class ColorCat(object):
                         if ColorCat.is_valid(i + 1) or ColorCat.is_dot(i + 1)
                     ]
 
+                    if not ColorCat.is_valid(len(ldata)):
+                        data += [Color.s(' {W}{GR}...{W}  ').rjust(mc)]
+
                     print('\n'.join(data))
                 else:
                     ldata = data.split('\n')
@@ -133,6 +136,9 @@ class ColorCat(object):
                         for i, l in enumerate(ldata)
                         if ColorCat.is_valid(i + 1) or ColorCat.is_dot(i + 1)
                     ]
+
+                    if not ColorCat.is_valid(len(ldata)):
+                        data += [(Color.s(' {W}{GR}...{W}  ').rjust(mc), '')]
 
                     print(tabulate(data, header, tablefmt='rounded_outline'))
 
