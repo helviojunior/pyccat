@@ -22,6 +22,25 @@ CCat officially supports Python 3.8+.
 pip3 install --upgrade pyccat
 ```
 
+## Help
+
+```bash
+ccat -h
+
+positional arguments:
+  [filename]                                Filename
+
+Options:
+  -s, --simple                              just colorize the file content
+  -nt, --no-tabulated                       do not show tab
+  --style [style name]                      pygments lib style name. (default: gruvbox-dark). See more at: https://pygments.org/styles/
+  -l [filter], --lines [filter]             return only selected lines (ex1: 5:13 or ex2: 50: or ex3: :100)
+  -hl [filter], --highlight-lines [filter]  highlight only selected lines (ex1: 5:13 or ex2: 50: or ex3: :100)
+  -h, --help                                show help message and exit
+  -v                                        Specify verbosity level (default: 0). Example: -v, -vv, -vvv
+  --version                                 show current version
+```
+
 ## Executing
 
 **Regular linux cat**
@@ -50,8 +69,21 @@ ccat -s /tmp/teste.json
 
 **Display only some lines**
 ```bash
-ccat -nt -l 4:10 teste.json
-ccat -nt -l 2:2,4:10 teste.json
+ccat -l 18:37 teste.json
 ```
 
 ![Sample 004](images/sample_004.jpg)
+
+```bash
+ccat -l 18:23,35:37 teste.json
+```
+
+![Sample 004](images/sample_005.jpg)
+
+
+**Display only some lines and highlight specific lines**
+```bash
+ccat -l 18:37 -hl 18:23,35:37 teste.json
+```
+
+![Sample 004](images/sample_006.jpg)
