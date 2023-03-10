@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import json
 
+from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexers.data import JsonLexer
 from tabulate import tabulate
 import codecs
@@ -10,6 +11,7 @@ try:
     from pygments import highlight
     from pygments.lexers import (get_lexer_by_name, get_lexer_for_filename, get_lexer_for_mimetype, guess_lexer)
     from pygments.formatters import TerminalFormatter
+    from pygments.styles import get_style_by_name
 except (ValueError, ImportError) as e:
     raise Exception('You may need to run ccat from the root directory (which includes README.md)', e)
 
@@ -31,6 +33,29 @@ class ColorCat(object):
 
         self.run()
 
+    @staticmethod
+    def is_valid(line):
+        if len(Configuration.lines) == 0:
+            return True
+
+        return any([
+            x for x in Configuration.lines
+            if line >= x[0] and (x[1] == 0 or line <= x[1])
+        ])
+
+    @staticmethod
+    def is_dot(line):
+        if len(Configuration.lines) == 0:
+            return False
+
+        if ColorCat.is_valid(line - 1):
+            return False
+
+        return any([
+            x for x in Configuration.lines
+            if x[0] != 0 and line == x[0] - 1
+        ])
+
     def run(self):
 
         try:
@@ -45,7 +70,7 @@ class ColorCat(object):
             except:
                 lexer = None
 
-            formatter = TerminalFormatter(linenos=False)
+            formatter = Terminal256Formatter(linenos=False, style=Configuration.style)
 
             with open(Configuration.filename, 'rb') as f:
                 data = f.read()
@@ -87,17 +112,27 @@ class ColorCat(object):
                     print(data)
                 elif Configuration.no_tab:
                     ldata = data.split('\n')
-                    mc = len(f'{len(ldata)}') + 2
+                    mc = len(f'{len(ldata)}')
 
-                    data = [Color.s(' {W}{O}{D}%s{GR}:{W}  ' % i).rjust(mc) + l for i, l in enumerate(ldata)]
+                    data = [
+                        (Color.s(' {W}{O}{D}%s{GR}:{W}  ' % (f'{i + 1}'.rjust(mc))) + l)
+                        if ColorCat.is_valid(i + 1) else (Color.s(' {W}{GR}...{W}  ').rjust(mc))
+                        for i, l in enumerate(ldata)
+                        if ColorCat.is_valid(i + 1) or ColorCat.is_dot(i + 1)
+                    ]
 
                     print('\n'.join(data))
                 else:
                     ldata = data.split('\n')
-                    mc = len(f'{len(ldata)}') + 2
+                    mc = len(f'{len(ldata)}')
 
                     header = ['', 'File: %s' % Configuration.filename]
-                    data = [(Color.s(' {W}{O}{D}%s{W} ' % i).rjust(mc), l) for i, l in enumerate(ldata)]
+                    data = [
+                        (Color.s(' {W}{O}{D}%s{W} ' % (f'{i + 1}'.rjust(mc))), l)
+                        if ColorCat.is_valid(i + 1) else (Color.s(' {W}{GR}...{W}  ').rjust(mc), '')
+                        for i, l in enumerate(ldata)
+                        if ColorCat.is_valid(i + 1) or ColorCat.is_dot(i + 1)
+                    ]
 
                     print(tabulate(data, header, tablefmt='rounded_outline'))
 

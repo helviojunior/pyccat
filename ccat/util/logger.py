@@ -10,9 +10,9 @@ class Logger(object):
     out_file = ''
 
     @staticmethod
-    def pl(text):
+    def pl(text, out=sys.stdout):
         '''Prints text using colored format with trailing new line.'''
-        Color.pl(text)
+        Color.pl(text, out=out)
 
         if Logger.out_file != '':
             try:

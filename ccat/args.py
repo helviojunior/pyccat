@@ -27,7 +27,7 @@ class Arguments(object):
             usage=argparse.SUPPRESS,
             prog="ccat",
             add_help=False,
-            formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=80, width=130))
+            formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=80, width=180))
 
         parser.add_argument('filename',
                             action='store',
@@ -45,13 +45,29 @@ class Arguments(object):
                            action='store_true',
                            default=False,
                            dest=f'simple',
-                           help=Color.s('Just colorize the file content'))
+                           help=Color.s('just colorize the file content'))
 
         flags.add_argument('-nt', '--no-tabulated',
                            action='store_true',
                            default=False,
                            dest=f'no_tab',
-                           help=Color.s('Do not show tab'))
+                           help=Color.s('do not show tab'))
+
+        flags.add_argument('--style',
+                           action='store',
+                           metavar='[style name]',
+                           type=str,
+                           default='gruvbox-dark',
+                           dest=f'style',
+                           help=Color.s('pygments lib style name. (default: {G}gruvbox-dark{W}). See more at: https://pygments.org/styles/'))
+
+        flags.add_argument('-l', '--lines',
+                           action='store',
+                           metavar='[filter]',
+                           type=str,
+                           default='gruvbox-dark',
+                           dest=f'line_filter',
+                           help=Color.s('return only selected lines ({W}{D}ex1:{G} 5:13 {W}{D}or ex2: {G}50: {W}{D}or ex3: {G}:100{W})'))
 
         flags.add_argument('-h', '--help',
                            action='help',

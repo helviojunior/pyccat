@@ -35,14 +35,14 @@ class Color(object):
     last_sameline_length = 0
 
     @staticmethod
-    def p(text):
+    def p(text, out=sys.stdout):
         '''
         Prints text using colored format on same line.
         Example:
             Color.p("{R}This text is red. {W} This text is white")
         '''
-        sys.stdout.write(Color.s(text))
-        sys.stdout.flush()
+        out.write(Color.s(text))
+        out.flush()
         if '\r' in text:
             text = text[text.rfind('\r')+1:]
             Color.last_sameline_length = len(text)
@@ -50,9 +50,9 @@ class Color(object):
             Color.last_sameline_length += len(text)
 
     @staticmethod
-    def pl(text):
+    def pl(text, out=sys.stdout):
         '''Prints text using colored format with trailing new line.'''
-        Color.p('%s\n' % text)
+        Color.p('%s\n' % text, out)
         Color.last_sameline_length = 0
 
     @staticmethod

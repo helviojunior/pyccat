@@ -5,6 +5,11 @@ import os, sys
 from .util.logger import Logger
 from .__meta__ import __version__
 
+try:
+    from pygments.styles import get_style_by_name
+except (ValueError, ImportError) as e:
+    Logger.pl('{!} {R}Error: library {O}pygments{R} not found{W}\n     Install with {O}pip3 install Pygments{W} command.')
+    sys.exit(3)
 
 class Configuration(object):
     ''' Stores configuration variables and functions for Tfileindexer. '''
@@ -17,6 +22,8 @@ class Configuration(object):
     cmd_line = ''
     simple = False
     no_tab = False
+    style = None
+    lines = []
 
     @staticmethod
     def initialize():
@@ -83,3 +90,37 @@ class Configuration(object):
 
         Configuration.simple = args.args.simple
         Configuration.no_tab = args.args.no_tab
+
+        try:
+            Configuration.style = get_style_by_name(args.args.style)
+        except Exception as e:
+            Logger.pl('{!} {R}Error selecting style {O}%s{R}: {G}%s{W}\n     {W}{D}Check available styles at https://pygments.org/styles/{W}' % (args.args.style, str(e)), out=sys.stderr)
+            sys.exit(1)
+
+        if args.args.line_filter != '':
+            filter_list = args.args.line_filter.split(",")
+            for filter in filter_list:
+                filter = filter.strip()
+                if ':' in filter:
+                    (i_start, i_end) = filter.split(":")
+                    end = 0
+                    start = 0
+                    try:
+                        start = int(f'0{i_start}')
+                    except:
+                        Logger.pl(
+                            '{!} {R}error: could not convert {O}%s{R} from {O}%s{R} to an integer value {W}\r\n' % (
+                                i_start, filter))
+                        sys.exit(1)
+
+                    try:
+                        end = int(f'0{i_end}')
+                    except:
+                        Logger.pl(
+                            '{!} {R}error: could not convert {O}%s{R} from {O}%s{R} to an integer value {W}\r\n' % (
+                                i_end, filter))
+                        sys.exit(1)
+
+                    Configuration.lines += [(start, end)]
+
+            Configuration.lines.sort(key=lambda x: x[0])
