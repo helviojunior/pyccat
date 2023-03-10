@@ -4,7 +4,7 @@ import json
 
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexers.data import JsonLexer
-from tabulate import tabulate
+from tabulate import _table_formats, tabulate, TableFormat, Line, DataRow
 import codecs
 
 try:
@@ -26,6 +26,18 @@ from .util.color import Color
 
 
 class ColorCat(object):
+
+    def __init__(self):
+        _table_formats["ccat"] = TableFormat(
+                lineabove=Line("", Color.s("{GR}─{W}"), Color.s("{GR}┬{W}"), ""),
+                linebelowheader=Line("", Color.s("{GR}─{W}"), Color.s("{GR}┼{W}"), ""),
+                linebetweenrows=None,
+                linebelow=Line("", Color.s("{GR}─{W}"), Color.s("{GR}┴{W}"), ""),
+                headerrow=DataRow("", Color.s("{GR}│{W}"), ""),
+                datarow=DataRow("", Color.s("{GR}│{W}"), ""),
+                padding=1,
+                with_header_hide=None,
+            )
 
     def main(self):
         ''' Either performs action based on arguments, or starts attack scanning '''
@@ -138,13 +150,13 @@ class ColorCat(object):
                 else:
                     ldata = data.split('\n')
                     mc = len(f'{len(ldata)}')
-                    dot_line = (Color.s('  {W}%s{W} ' % ColorCat.format_line_number('...', mc)), '')
+                    dot_line = (Color.s('  {W}%s{W}' % ColorCat.format_line_number('...', mc)), '')
                     size = os.get_terminal_size()
                     max_c2_size = size.columns - 10 - mc
 
                     header = ['', 'File: %s' % Configuration.filename]
                     data = [
-                        (Color.s(' {W}{O}{D}%s{W} ' % ColorCat.format_line_number(i + 1, mc)), l)
+                        (Color.s(' {W}{O}{D}%s{W}' % ColorCat.format_line_number(i + 1, mc)), l)
                         if ColorCat.is_valid(i + 1) else dot_line
                         for i, l in enumerate(ldata)
                         if ColorCat.is_valid(i + 1) or ColorCat.is_dot(i + 1)
@@ -153,7 +165,7 @@ class ColorCat(object):
                     if not ColorCat.is_valid(len(ldata)):
                         data += [dot_line]
 
-                    print(tabulate(data, header, tablefmt='rounded_outline', maxcolwidths=[None, max_c2_size]))
+                    print(tabulate(data, header, tablefmt='ccat', maxcolwidths=[None, max_c2_size]))
 
         except Exception as e:
             Color.pl("\n{!} {R}Error: {O}%s" % str(e))
