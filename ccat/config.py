@@ -24,6 +24,7 @@ class Configuration(object):
     no_tab = False
     style = None
     lines = []
+    highlight_lines = []
 
     @staticmethod
     def initialize():
@@ -47,8 +48,20 @@ class Configuration(object):
         # Overwrite config values with arguments (if defined)
         Configuration.load_from_arguments()
 
-
     @staticmethod
+    def count_file_lines(filename: str):
+        def _count_generator(reader):
+            b = reader(1024 * 1024)
+            while b:
+                yield b
+                b = reader(1024 * 1024)
+
+        with open(filename, 'rb') as fp:
+            c_generator = _count_generator(fp.raw.read)
+            # count each \n
+            count = sum(buffer.count(b'\n') for buffer in c_generator)
+            return count + 1
+
     def load_from_arguments():
         ''' Sets configuration values based on Argument.args object '''
         from .args import Arguments
@@ -83,14 +96,24 @@ class Configuration(object):
                 pass
         except IOError as x:
             if x.errno == errno.EACCES:
-                Logger.pl('{!} {R}error: could not open file {O}permission denied{R}{W}\r\n')
+                Logger.pl('{!} {R}Error: could not open file {O}permission denied{R}{W}\r\n')
                 sys.exit(1)
             elif x.errno == errno.EISDIR:
-                Logger.pl('{!} {R}error: could not open file {O}it is an directory{R}{W}\r\n')
+                Logger.pl('{!} {R}Error: could not open file {O}it is an directory{R}{W}\r\n')
                 sys.exit(1)
             else:
-                Logger.pl('{!} {R}error: could not openfile {W}\r\n')
+                Logger.pl('{!} {R}Error: could not openfile {W}\r\n')
                 sys.exit(1)
+
+        fs = os.path.getsize(Configuration.filename)
+        if fs > (1024 * 1024 * 100):
+            Logger.pl("\n{!} {R}Error: File is to big. The maxim supported file size is 500MB{W}")
+            sys.exit(2)
+
+        lc = Configuration.count_file_lines(Configuration.filename)
+        if lc > 1000000:
+            Logger.pl("\n{!} {R}Error: File is to big. The maxim supported file lines size is 1.000.000{W}")
+            sys.exit(2)
 
         Configuration.simple = args.args.simple
         Configuration.no_tab = args.args.no_tab
@@ -128,3 +151,32 @@ class Configuration(object):
                     Configuration.lines += [(start, end)]
 
             Configuration.lines.sort(key=lambda x: x[0])
+
+        if args.args.highlight_line_filter != '':
+            filter_list = args.args.highlight_line_filter.split(",")
+            for filter in filter_list:
+                filter = filter.strip()
+                if ':' in filter:
+                    (i_start, i_end) = filter.split(":")
+                    end = 0
+                    start = 0
+                    try:
+                        start = int(f'0{i_start}')
+                    except:
+                        Logger.pl(
+                            '{!} {R}error: could not convert {O}%s{R} from {O}%s{R} to an integer value {W}\r\n' % (
+                                i_start, filter))
+                        sys.exit(1)
+
+                    try:
+                        end = int(f'0{i_end}')
+                    except:
+                        Logger.pl(
+                            '{!} {R}error: could not convert {O}%s{R} from {O}%s{R} to an integer value {W}\r\n' % (
+                                i_end, filter))
+                        sys.exit(1)
+
+                    Configuration.highlight_lines += [(start, end)]
+
+            Configuration.highlight_lines.sort(key=lambda x: x[0])
+

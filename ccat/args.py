@@ -65,9 +65,17 @@ class Arguments(object):
                            action='store',
                            metavar='[filter]',
                            type=str,
-                           default='gruvbox-dark',
+                           default='',
                            dest=f'line_filter',
                            help=Color.s('return only selected lines ({W}{D}ex1:{G} 5:13 {W}{D}or ex2: {G}50: {W}{D}or ex3: {G}:100{W})'))
+
+        flags.add_argument('-hl', '--highlight-lines',
+                           action='store',
+                           metavar='[filter]',
+                           type=str,
+                           default='',
+                           dest=f'highlight_line_filter',
+                           help=Color.s('highlight only selected lines ({W}{D}ex1:{G} 5:13 {W}{D}or ex2: {G}50: {W}{D}or ex3: {G}:100{W})'))
 
         flags.add_argument('-h', '--help',
                            action='help',

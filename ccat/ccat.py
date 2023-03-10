@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 import json
+import re
 
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexers.data import JsonLexer
@@ -56,6 +57,15 @@ class ColorCat(object):
         ])
 
     @staticmethod
+    def is_highlight(line):
+        if len(Configuration.highlight_lines) == 0:
+            return True
+
+        return any([
+            x for x in Configuration.highlight_lines
+            if line >= x[0] and (x[1] == 0 or line <= x[1])
+        ])
+    @staticmethod
     def is_dot(line):
         if len(Configuration.lines) == 0:
             return False
@@ -77,14 +87,14 @@ class ColorCat(object):
         else:
             return '{O}{D}%s' % (f'{line}'.rjust(max_line))
 
+    @staticmethod
+    def escape_ansi(line):
+        pattern = re.compile(r'\x1B\[\d+(;\d+){0,2}m')
+        return pattern.sub('', line)
+
     def run(self):
 
         try:
-
-            fs = os.path.getsize(Configuration.filename)
-            if fs > (1024 * 1024 * 1024):
-                Color.pl("\n{!} {R}Error: File is to big. The maxim supported file size is 1GB{W}")
-                sys.exit(2)
 
             try:
                 lexer = get_lexer_for_filename(Configuration.filename)
@@ -122,17 +132,21 @@ class ColorCat(object):
                 except:
                     pass
 
-                data = data.replace('\t', '  ')
-
-                data = highlight(
+                data = data.replace('\t', '  ').replace('\r', '')
+                ldata = highlight(
                     code=data,
                     lexer=lexer,
-                    formatter=formatter).strip('\r\n')
+                    formatter=formatter).replace('\t', '  ').strip('\n').split('\n')
+
+                ldata = [
+                    l
+                    if ColorCat.is_highlight(i + 1) else Color.s('{GR}%s{W}' % ColorCat.escape_ansi(l))
+                    for i, l in enumerate(ldata)
+                ]
 
                 if Configuration.simple:
-                    print(data)
+                    print('\n'.join(ldata))
                 elif Configuration.no_tab:
-                    ldata = data.split('\n')
                     mc = len(f'{len(ldata)}')
                     dot_line = Color.s('  {W}%s{W}  ' % ColorCat.format_line_number('...', mc))
 
@@ -148,7 +162,6 @@ class ColorCat(object):
 
                     print('\n'.join(data))
                 else:
-                    ldata = data.split('\n')
                     mc = len(f'{len(ldata)}')
                     dot_line = (Color.s('  {W}%s{W} ' % ColorCat.format_line_number('...', mc)), '')
                     size = os.get_terminal_size()
