@@ -56,6 +56,15 @@ class ColorCat(object):
             if x[0] != 0 and line == x[0] - 1
         ])
 
+    @staticmethod
+    def format_line_number(line, max_line):
+        max_line = max_line if max_line > 3 else 3
+
+        if str(line) == '...':
+            return '{GR}%s' % (f'{line}'.rjust(max_line))
+        else:
+            return '{O}{D}%s' % (f'{line}'.rjust(max_line))
+
     def run(self):
 
         try:
@@ -113,32 +122,34 @@ class ColorCat(object):
                 elif Configuration.no_tab:
                     ldata = data.split('\n')
                     mc = len(f'{len(ldata)}')
+                    dot_line = Color.s('  {W}%s{W}  ' % ColorCat.format_line_number('...', mc))
 
                     data = [
-                        (Color.s(' {W}{O}{D}%s{GR}:{W}  ' % (f'{i + 1}'.rjust(mc))) + l)
-                        if ColorCat.is_valid(i + 1) else (Color.s(' {W}{GR}...{W}  ').rjust(mc))
+                        (Color.s(' {W}%s{GR}:{W}  ' % ColorCat.format_line_number(i + 1, mc)) + l)
+                        if ColorCat.is_valid(i + 1) else dot_line
                         for i, l in enumerate(ldata)
                         if ColorCat.is_valid(i + 1) or ColorCat.is_dot(i + 1)
                     ]
 
                     if not ColorCat.is_valid(len(ldata)):
-                        data += [Color.s(' {W}{GR}...{W}  ').rjust(mc)]
+                        data += [dot_line]
 
                     print('\n'.join(data))
                 else:
                     ldata = data.split('\n')
                     mc = len(f'{len(ldata)}')
+                    dot_line = (Color.s('  {W}%s{W} ' % ColorCat.format_line_number('...', mc)), '')
 
                     header = ['', 'File: %s' % Configuration.filename]
                     data = [
-                        (Color.s(' {W}{O}{D}%s{W} ' % (f'{i + 1}'.rjust(mc))), l)
-                        if ColorCat.is_valid(i + 1) else (Color.s(' {W}{GR}...{W}  ').rjust(mc), '')
+                        (Color.s(' {W}{O}{D}%s{W} ' % ColorCat.format_line_number(i + 1, mc)), l)
+                        if ColorCat.is_valid(i + 1) else dot_line
                         for i, l in enumerate(ldata)
                         if ColorCat.is_valid(i + 1) or ColorCat.is_dot(i + 1)
                     ]
 
                     if not ColorCat.is_valid(len(ldata)):
-                        data += [(Color.s(' {W}{GR}...{W}  ').rjust(mc), '')]
+                        data += [dot_line]
 
                     print(tabulate(data, header, tablefmt='rounded_outline'))
 
