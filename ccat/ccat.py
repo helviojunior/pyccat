@@ -139,6 +139,8 @@ class ColorCat(object):
                     ldata = data.split('\n')
                     mc = len(f'{len(ldata)}')
                     dot_line = (Color.s('  {W}%s{W} ' % ColorCat.format_line_number('...', mc)), '')
+                    size = os.get_terminal_size()
+                    max_c2_size = size.columns - 10 - mc
 
                     header = ['', 'File: %s' % Configuration.filename]
                     data = [
@@ -151,7 +153,7 @@ class ColorCat(object):
                     if not ColorCat.is_valid(len(ldata)):
                         data += [dot_line]
 
-                    print(tabulate(data, header, tablefmt='rounded_outline'))
+                    print(tabulate(data, header, tablefmt='rounded_outline', maxcolwidths=[None, max_c2_size]))
 
         except Exception as e:
             Color.pl("\n{!} {R}Error: {O}%s" % str(e))
