@@ -12,7 +12,9 @@ CCat officially supports Python 3.8+.
 
 ## Main features
 
-* [x] Read and highlight text and conde files
+* [x] Read and highlight text and code files
+* [x] Filter to display only selected lines
+* [x] Multiple highlight styles
 
 ## Installation
 
