@@ -89,7 +89,8 @@ class ColorCat(object):
 
     @staticmethod
     def escape_ansi(line):
-        pattern = re.compile(r'\x1B\[\d+(;\d+){0,2}m')
+        #pattern = re.compile(r'\x1B\[\d+(;\d+){0,2}m')
+        pattern = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]')
         return pattern.sub('', line)
 
     def run(self):
