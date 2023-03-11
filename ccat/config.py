@@ -87,7 +87,7 @@ class Configuration(object):
 
         if not os.path.isfile(Configuration.filename):
             Logger.pl('{!} {R}error: filename does not exists {O}%s{R} {W}\r\n' % (
-                args.args.config_file))
+                Configuration.filename))
             exit(1)
 
         try:
