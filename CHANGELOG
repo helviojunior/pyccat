@@ -1,0 +1,16 @@
+- 0.1.8: Future version.
+
+- 0.1.7: Highlight function with parameter ``-hl``
+  Bugfix at old version of library tabulated.
+  Update documentation.
+- 0.1.6: Table lay-out improvements
+  Max width implementation.
+- 0.1.5: Bugfix and improvements at cut function
+  Max width implementation.
+- 0.1.3: Bugfix and improvements at cut function
+  Update documentation.
+- 0.1.3: Cut function with parameter ``-l``
+- 0.1.2: Update documentation.
+  Check file size
+  Utilization of specific JSON lexer
+- 0.1.0: Initial CCat PyPI release.
