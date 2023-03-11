@@ -1,4 +1,5 @@
 - 0.1.8: Future version.
+  Bugfix at ``--version`` tag and -h colors.
 
 - 0.1.7: Highlight function with parameter ``-hl``
   Bugfix at old version of library tabulated.

@@ -66,11 +66,11 @@ class Configuration(object):
         ''' Sets configuration values based on Argument.args object '''
         from .args import Arguments
 
-        args = Arguments()
-
         if any(['--version' in word for word in sys.argv]):
             Logger.pl(f' {Configuration.name} v{Configuration.version}\n')
             sys.exit(0)
+
+        args = Arguments()
 
         a1 = sys.argv
         a1[0] = 'ccat'
