@@ -215,11 +215,9 @@ class ColorCat(object):
 
 def run():
     # Explicitly changing the stdout encoding format
-    #if sys.stdout.encoding is None:
+    if sys.stdout.encoding is None:
     #    # Output is redirected to a file
-    #    sys.stdout = codecs.getwriter('latin-1')(sys.stdout)
-
-    print(sys.stdout.encoding)
+        sys.stdout = codecs.getwriter('latin-1')(sys.stdout)
 
     o = ColorCat()
 
