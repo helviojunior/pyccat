@@ -4,7 +4,7 @@
 import sys
 import colorama
 from colorama import Fore, Back, Style
-colorama.init()
+colorama.init(strip=False)
 
 class Color(object):
     ''' Helper object for easily printing colored text to the terminal. '''
