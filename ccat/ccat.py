@@ -165,8 +165,11 @@ class ColorCat(object):
                 else:
                     mc = len(f'{len(ldata)}')
                     dot_line = (Color.s('  {W}%s{W} ' % ColorCat.format_line_number('...', mc)), '')
-                    size = os.get_terminal_size()
-                    max_c2_size = size.columns - 10 - mc
+                    try:
+                        size = os.get_terminal_size().columns
+                    except:
+                        size = 300
+                    max_c2_size = size - 10 - mc
 
                     header = ['', 'File: %s' % Configuration.filename]
                     data = [
