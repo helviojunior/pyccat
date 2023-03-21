@@ -47,6 +47,7 @@ tmtagsHistory
 build
 dist
 *.egg-info
+ccat/requirements.txt
 
 # Other sources #
 #################

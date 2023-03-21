@@ -16,6 +16,7 @@ git commit -m "Update build version"
 '''
 
 import os
+import shutil
 import sys
 
 from setuptools import setup, find_packages
@@ -26,7 +27,10 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(f"{here}/ccat/__meta__.py") as f:
     exec(f.read(), meta)
 
-with open(f"{here}/requirements.txt", "r", encoding="utf-8") as f:
+if not os.path.isfile(f"{here}/ccat/requirements.txt"):
+    shutil.copyfile(f"{here}/requirements.txt", f"{here}/ccat/requirements.txt")
+
+with open(f"{here}/ccat/requirements.txt", "r", encoding="utf-8") as f:
     requires = f.read().splitlines()
     if not requires:
         print("Unable to read requirements from the requirements.txt file"
@@ -35,6 +39,18 @@ with open(f"{here}/requirements.txt", "r", encoding="utf-8") as f:
 
 with open(f"{here}/README.md", "r", encoding="utf-8") as f:
     readme = f.read()
+
+# Find package Data
+package_data = {"": ["LICENSE"]}
+package_data.update(
+    {
+        dp.replace(here.strip('/') + '/', '').lstrip('/. ').replace('\\', '/').replace('/', '.'): [
+            f for f in filenames if '.py' not in f.lower() and '.ds_store' not in f.lower()
+        ]
+        for dp, dn, filenames in os.walk(f"{here}/ccat") for f in filenames
+        if '.py' not in f.lower() and '.ds_store' not in f.lower()
+    }
+)
 
 #If you use both include_package_data and package_data, files specified with package_data will not be automatically included in sdists; you must instead list them in your MANIFEST.in
 
@@ -48,7 +64,7 @@ setup(
     author_email=meta["__author_email__"],
     url=meta["__url__"],
     packages=find_packages(),
-    package_data={"": ["LICENSE"]},
+    package_data=package_data,
     data_files=[('', ['requirements.txt'])],
     #include_package_data=True,
     python_requires=">=3.8, <4",
