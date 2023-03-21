@@ -15,6 +15,7 @@ CCat officially supports Python 3.8+.
 * [x] Read and highlight text and code files
 * [x] Filter to display only selected lines
 * [x] Multiple highlight styles
+* [x] Save output at image (png/jpg) file using ansi2image lib.
 
 ## Installation
 
@@ -36,6 +37,7 @@ Options:
   --style [style name]                      pygments lib style name. (default: gruvbox-dark). See more at: https://pygments.org/styles/
   -l [filter], --lines [filter]             return only selected lines (ex1: 5:13 or ex2: 50: or ex3: :100)
   -hl [filter], --highlight-lines [filter]  highlight only selected lines (ex1: 5:13 or ex2: 50: or ex3: :100)
+  --output-img [filename]                   image output file.
   -h, --help                                show help message and exit
   -v                                        Specify verbosity level (default: 0). Example: -v, -vv, -vvv
   --version                                 show current version
