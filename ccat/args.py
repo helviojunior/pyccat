@@ -77,6 +77,13 @@ class Arguments(object):
                            dest=f'highlight_line_filter',
                            help=Color.s('highlight only selected lines ({W}{D}ex1:{W}{G} 5:13 {W}{D}or ex2: {W}{G}50: {W}{D}or ex3: {W}{G}:100{W})'))
 
+        flags.add_argument('--output-img',
+                           action='store',
+                           metavar='[filename]',
+                           type=str,
+                           dest=f'out_file',
+                           help=Color.s('image output file.'))
+
         flags.add_argument('-h', '--help',
                            action='help',
                            help=Color.s('show help message and exit'))

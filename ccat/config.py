@@ -2,6 +2,8 @@
 # -*- coding: UTF-8 -*-
 import errno
 import os, sys
+from pathlib import Path
+
 from .util.logger import Logger
 from .__meta__ import __version__
 
@@ -10,6 +12,9 @@ try:
 except (ValueError, ImportError) as e:
     Logger.pl('{!} {R}Error: library {O}pygments{R} not found{W}\n     Install with {O}pip3 install Pygments{W} command.')
     sys.exit(3)
+
+_FORMATS = ['jpg', 'jpeg', 'png']
+
 
 class Configuration(object):
     ''' Stores configuration variables and functions for Tfileindexer. '''
@@ -25,6 +30,8 @@ class Configuration(object):
     style = None
     lines = []
     highlight_lines = []
+    out_file = None
+    format = ''
 
     @staticmethod
     def initialize():
@@ -180,3 +187,21 @@ class Configuration(object):
 
             Configuration.highlight_lines.sort(key=lambda x: x[0])
 
+        if args.args.out_file is not None and args.args.out_file.strip() != '':
+
+            if os.path.isdir(args.args.out_file):
+                Logger.pl('{!} {R}error: invalid output filename {O}%s{R} {W}\r\n' % (
+                    args.args.out_file))
+                exit(1)
+
+            Configuration.out_file = args.args.out_file
+            fmt = Path(Configuration.out_file).suffix.strip('. ').lower()
+
+            if fmt is None or fmt not in _FORMATS:
+                Logger.pl('{!} {R}error: invalid image format {O}%s{R}. Supported formats: {G}%s{W}\r\n' % (
+                    fmt, ', '.join(_FORMATS)))
+                exit(1)
+
+            Configuration.format = fmt.lower()
+            if Configuration.format == 'jpg':
+                Configuration.format = 'jpeg'

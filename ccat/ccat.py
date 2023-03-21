@@ -3,6 +3,7 @@
 import json
 import re
 
+from ansi2image.ansi2image import Ansi2Image
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexers.data import JsonLexer
 from tabulate import _table_formats, tabulate, TableFormat, Line, DataRow
@@ -93,6 +94,15 @@ class ColorCat(object):
         pattern = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]')
         return pattern.sub('', line)
 
+    @classmethod
+    def output(cls, text):
+        print(text)
+        if Configuration.out_file is not None:
+            o = Ansi2Image(0, 0, font_name=Ansi2Image.get_default_font_name(), font_size=13)
+            o.loads(text)
+            o.calc_size()
+            o.save_image(Configuration.out_file, format=Configuration.format)
+
     def run(self):
 
         try:
@@ -146,7 +156,7 @@ class ColorCat(object):
                 ]
 
                 if Configuration.simple:
-                    print('\n'.join(ldata))
+                    self.output('\n'.join(ldata))
                 elif Configuration.no_tab:
                     mc = len(f'{len(ldata)}')
                     dot_line = Color.s('  {W}%s{W}  ' % ColorCat.format_line_number('...', mc))
@@ -161,7 +171,7 @@ class ColorCat(object):
                     if not ColorCat.is_valid(len(ldata)):
                         data += [dot_line]
 
-                    print('\n'.join(data))
+                    self.output('\n'.join(data))
                 else:
                     mc = len(f'{len(ldata)}')
                     dot_line = (Color.s('  {W}%s{W} ' % ColorCat.format_line_number('...', mc)), '')
@@ -194,7 +204,7 @@ class ColorCat(object):
                     except:
                         pass
 
-                    print(tabulate(data, header, tablefmt='ccat', **cols))
+                    self.output(tabulate(data, header, tablefmt='ccat', **cols))
 
         except Exception as e:
             Color.pl("\n{!} {R}Error: {O}%s" % str(e))
