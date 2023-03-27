@@ -66,6 +66,7 @@ class ColorCat(object):
             x for x in Configuration.highlight_lines
             if line >= x[0] and (x[1] == 0 or line <= x[1])
         ])
+
     @staticmethod
     def is_dot(line):
         if len(Configuration.lines) == 0:
@@ -160,9 +161,14 @@ class ColorCat(object):
                 elif Configuration.no_tab:
                     mc = len(f'{len(ldata)}')
                     dot_line = Color.s('  {W}%s{W}  ' % ColorCat.format_line_number('...', mc))
+                    c1_len = len(ColorCat.escape_ansi(dot_line))
+                    size = ColorCat.get_columns()
 
                     data = [
-                        (Color.s(' {W}%s{GR}:{W}  ' % ColorCat.format_line_number(i + 1, mc)) + l)
+                        (
+                                Color.s(' {W}%s{GR}:{W}  ' % ColorCat.format_line_number(i + 1, mc)) +
+                                ColorCat.format_line(l, c1_len, size)
+                        )
                         if ColorCat.is_valid(i + 1) else dot_line
                         for i, l in enumerate(ldata)
                         if ColorCat.is_valid(i + 1) or ColorCat.is_dot(i + 1)
@@ -171,14 +177,17 @@ class ColorCat(object):
                     if not ColorCat.is_valid(len(ldata)):
                         data += [dot_line]
 
-                    self.output('\n'.join(data))
+                    text = Color.s(' \033[38;5;52m=\033[38;5;88m=\033[38;5;124m=\033[38;5;160m=\033[38;5;196m> ' + '{W}{O}File: {G}%s{W}\n' % Configuration.filename)
+
+                    text += ''.join([
+                        '%s-' % c for k, c in sorted(Color.gray_scale.items(), key=lambda x: x[0], reverse=True)
+                    ]) + Color.s('{W}\n')
+
+                    self.output(text + '\n'.join(data))
                 else:
                     mc = len(f'{len(ldata)}')
                     dot_line = (Color.s('  {W}%s{W} ' % ColorCat.format_line_number('...', mc)), '')
-                    try:
-                        size = os.get_terminal_size().columns
-                    except:
-                        size = 300
+                    size = ColorCat.get_columns()
                     max_c2_size = size - 10 - mc
 
                     header = ['', 'File: %s' % Configuration.filename]
@@ -221,6 +230,65 @@ class ColorCat(object):
             raise e
 
         print(' ')
+
+    @staticmethod
+    def get_columns():
+        if Configuration.out_file is not None:
+            return 120
+
+        try:
+            size = os.get_terminal_size().columns
+        except:
+            size = 200
+
+        return size
+
+
+    @staticmethod
+    def format_line(text: str, number_line: int, max_cols: int = 200) -> str:
+        tab = 2
+        if max_cols < 120:
+            max_cols = 120
+        if len(ColorCat.escape_ansi(text)) < max_cols:
+            return text
+
+        text = text.replace('\t', ' ' * tab)
+        try:
+            parts = []
+            escaped_text = ColorCat.escape_ansi(text)
+            diff = (len(escaped_text) - len(escaped_text.lstrip()))
+            start = text.index(escaped_text.lstrip()[0]) - diff
+
+            if start > 0:
+                parts.append(text[0:start])
+
+            c = max_cols
+            o = start
+            size = max_cols
+            first_line = True
+            while c <= len(text):
+                p = text[o:c]
+                while len(ColorCat.escape_ansi(p)) < size:
+                    c += 1
+                    p = text[o:c]
+                    if o + c >= len(text):
+                        break
+                if first_line:
+                    size = max_cols - diff - tab
+                    first_line = False
+                else:
+                    parts.append(' \n' + (' ' * (number_line + diff + tab)))
+                o = c
+                c += size - 4
+                parts.append(p)
+
+            if o < len(text):
+                parts.append(' \n' + (' ' * (number_line + diff + tab)))
+                parts.append(text[o:])
+
+            return ''.join(parts)
+        except:
+            return text
 
 
 def run():

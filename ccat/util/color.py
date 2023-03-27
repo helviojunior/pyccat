@@ -18,7 +18,7 @@ class Color(object):
         'B' : '\033[34m', # blue
         'P' : '\033[35m', # purple
         'C' : '\033[36m', # cyan
-        'GR': '\033[38;5;250m', # gray
+        'GR': '\033[38;5;247m', # gray
         'D' : '\033[2m'   # dims current color. {W} resets.
     }
 
@@ -30,7 +30,9 @@ class Color(object):
         '{*}': ' {W}[{B}*{W}]'
     }
 
-
+    gray_scale = {
+        i: f'\033[38;5;{i}m' for i in range(232, 256)
+    }
 
     last_sameline_length = 0
 
