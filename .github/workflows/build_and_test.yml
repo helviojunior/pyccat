@@ -6,8 +6,23 @@ name: Test Build
 on:
     push:
       branches: [ main ]
+      paths-ignore:
+        - .gitignore
+        - README.md
+        - LICENSE
+        - TODO
+        - ccat/__meta__.py
+        - .github/workflows/build_and_test.yml
+
     pull_request:
       branches: [ main ]
+      paths-ignore:
+        - .gitignore
+        - README.md
+        - LICENSE
+        - TODO
+        - ccat/__meta__.py
+        - .github/workflows/build_and_test.yml
 
 jobs:
   lint:
