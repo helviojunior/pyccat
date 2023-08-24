@@ -127,9 +127,12 @@ class ColorCat(object):
 
                 # try to read
                 try:
-                    data = data.decode('utf-8')
+                    data = data.decode('utf-8-sig')
                 except:
-                    data = data.decode('latin-1')
+                    try:
+                        data = data.decode('utf-8')
+                    except:
+                        data = data.decode('latin-1')
 
                 if data.strip(' \r\n') == '':
                     Color.pl("\n{!} {R}Error: File is empty{W}")
@@ -141,7 +144,17 @@ class ColorCat(object):
                     data = json.dumps(tmp, sort_keys=False, indent=2)
                     data = data.strip('\r\n')
                     lexer = JsonLexer()
-                except:
+                except Exception as e:
+                    Color.pl("\n{!} {R}Error: {O}%s" % str(e))
+                    if Configuration.verbose > 3 or True:
+                        Color.pl('\n{!} {O}Full stack trace below')
+                        from traceback import format_exc
+                        Color.p('\n{!}    ')
+                        err = format_exc().strip()
+                        err = err.replace('\n', '\n{W}{!} {W}   ')
+                        err = err.replace('  File', '{W}{D}File')
+                        err = err.replace('  Exception: ', '{R}Exception: {O}')
+                        Color.pl(err)
                     pass
 
                 data = data.replace('\t', '  ').replace('\r', '')
