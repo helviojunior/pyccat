@@ -106,8 +106,15 @@ class ColorCat(object):
             o.calc_size()
             o.save_image(Configuration.out_file, format=Configuration.format)
 
-    def print_formatted(self, data: Union[bytes, bytearray, str], title: str = ''):
+    def print_formatted(self, data: Union[bytes, bytearray, str],
+                        title: str = '',
+                        simple=False,
+                        no_tab=False):
+        ini = Configuration.initialized
         Configuration.initialize(parse_arguments=False)
+        if not ini:
+            Configuration.simple = simple
+            Configuration.no_tab = no_tab
 
         try:
 
@@ -196,7 +203,7 @@ class ColorCat(object):
                                     '{W}%s{W}\n') % title)
 
                     text += ''.join([
-                        '%s-' % c for k, c in sorted(Color.gray_scale.items(), key=lambda x: x[0], reverse=True)
+                        '%s──' % c for k, c in sorted(Color.gray_scale.items(), key=lambda x: x[0], reverse=True)
                     ]) + Color.s('{W}\n')
 
                     self.output(text + '\n'.join(data))
@@ -222,11 +229,11 @@ class ColorCat(object):
                     # Available only at v0.9.0 and upper
                     try:
                         from tabulate.version import __version_tuple__ as tabv
-                        if tabv[0] > 0 and tabv[1] >= 9:
+                        if (tabv[0] > 0) or (tabv[0] == 0 and tabv[1] >= 9):
                             cols = dict(
                                 maxcolwidths=[None, max_c2_size]
                             )
-                    except:
+                    except Exception as e:
                         pass
 
                     self.output(tabulate(data, header, tablefmt='ccat', **cols))
@@ -259,7 +266,7 @@ class ColorCat(object):
             with open(Configuration.filename, 'rb') as f:
                 data = f.read()
 
-            self.print_formatted(data=data, title=('{O}File: {G}%s{W}' % Configuration.filename))
+            self.print_formatted(data=data, title=Color.s('{O}File: {G}%s{W}' % Configuration.filename))
 
         except Exception as e:
             Color.pl("\n{!} {R}Error: {O}%s" % str(e))
@@ -279,16 +286,20 @@ class ColorCat(object):
 
     @staticmethod
     def get_columns():
+        return 80
+
         if Configuration.out_file is not None:
             return 120
 
         try:
             size = os.get_terminal_size().columns
         except:
-            size = 200
+            try:
+                _, size = os.popen('stty size', 'r').read().split()
+            except:
+                size = 80
 
         return size
-
 
     @staticmethod
     def format_line(text: str, number_line: int, max_cols: int = 200) -> str:
