@@ -34,7 +34,7 @@ class Configuration(object):
     format = ''
 
     @staticmethod
-    def initialize():
+    def initialize(parse_arguments=True):
         '''
             Sets up default initial configuration values.
             Also sets config values based on command-line arguments.
@@ -53,7 +53,9 @@ class Configuration(object):
         Configuration.print_stack_traces = True
 
         # Overwrite config values with arguments (if defined)
-        Configuration.load_from_arguments()
+        Configuration.load_defaults()
+        if parse_arguments:
+            Configuration.load_from_arguments()
 
     @staticmethod
     def count_file_lines(filename: str):
@@ -69,6 +71,14 @@ class Configuration(object):
             count = sum(buffer.count(b'\n') for buffer in c_generator)
             return count + 1
 
+    @staticmethod
+    def load_defaults():
+        Configuration.verbose = 1
+        Configuration.simple = False
+        Configuration.no_tab = False
+        Configuration.style = get_style_by_name("gruvbox-dark")
+
+    @staticmethod
     def load_from_arguments():
         ''' Sets configuration values based on Argument.args object '''
         from .args import Arguments

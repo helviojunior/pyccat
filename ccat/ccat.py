@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import json
 import re
+from typing import Union
 
 from ansi2image.ansi2image import Ansi2Image
 from pygments.formatters.terminal256 import Terminal256Formatter
@@ -28,6 +29,7 @@ from .util.color import Color
 
 
 class ColorCat(object):
+    lexer = None
 
     def __init__(self):
         _table_formats["ccat"] = TableFormat(
@@ -104,26 +106,26 @@ class ColorCat(object):
             o.calc_size()
             o.save_image(Configuration.out_file, format=Configuration.format)
 
-    def run(self):
+    def print_formatted(self, data: Union[bytes, bytearray, str], title: str = ''):
+        Configuration.initialize(parse_arguments=False)
 
         try:
 
-            try:
-                lexer = get_lexer_for_filename(Configuration.filename)
-            except:
-                lexer = None
-
             formatter = Terminal256Formatter(linenos=False, style=Configuration.style)
 
-            with open(Configuration.filename, 'rb') as f:
-                data = f.read()
-
             if data is not None:
-                if lexer is None:
+
+                if isinstance(data, str):
+                    data = data.encode("UTF-8")
+
+                # Convert data to byte array
+                data = b'' + data
+
+                if self.lexer is None:
                     try:
-                        lexer = guess_lexer(data)
+                        self.lexer = guess_lexer(data)
                     except:
-                        lexer = get_lexer_by_name('text')
+                        self.lexer = get_lexer_by_name('text')
 
                 # try to read
                 try:
@@ -143,7 +145,7 @@ class ColorCat(object):
                     tmp = json.loads(data)
                     data = json.dumps(tmp, sort_keys=False, indent=2)
                     data = data.strip('\r\n')
-                    lexer = JsonLexer()
+                    self.lexer = JsonLexer()
                 except Exception as e:
                     Color.pl("\n{!} {R}Error: {O}%s" % str(e))
                     if Configuration.verbose > 3 or True:
@@ -160,7 +162,7 @@ class ColorCat(object):
                 data = data.replace('\t', '  ').replace('\r', '')
                 ldata = highlight(
                     code=data,
-                    lexer=lexer,
+                    lexer=self.lexer,
                     formatter=formatter).replace('\t', '  ').strip('\n').split('\n')
 
                 ldata = [
@@ -190,7 +192,8 @@ class ColorCat(object):
                     if not ColorCat.is_valid(len(ldata)):
                         data += [dot_line]
 
-                    text = Color.s(' \033[38;5;52m=\033[38;5;88m=\033[38;5;124m=\033[38;5;160m=\033[38;5;196m> ' + '{W}{O}File: {G}%s{W}\n' % Configuration.filename)
+                    text = Color.s((' \033[38;5;52m=\033[38;5;88m=\033[38;5;124m=\033[38;5;160m=\033[38;5;196m> '
+                                    '{W}%s{W}\n') % title)
 
                     text += ''.join([
                         '%s-' % c for k, c in sorted(Color.gray_scale.items(), key=lambda x: x[0], reverse=True)
@@ -203,7 +206,7 @@ class ColorCat(object):
                     size = ColorCat.get_columns()
                     max_c2_size = size - 10 - mc
 
-                    header = ['', 'File: %s' % Configuration.filename]
+                    header = ['', title]
                     data = [
                         (Color.s(' {W}{O}{D}%s{W} ' % ColorCat.format_line_number(i + 1, mc)), l)
                         if ColorCat.is_valid(i + 1) else dot_line
@@ -227,6 +230,36 @@ class ColorCat(object):
                         pass
 
                     self.output(tabulate(data, header, tablefmt='ccat', **cols))
+
+        except Exception as e:
+            Color.pl("\n{!} {R}Error: {O}%s" % str(e))
+            if Configuration.verbose > 0 or True:
+                Color.pl('\n{!} {O}Full stack trace below')
+                from traceback import format_exc
+                Color.p('\n{!}    ')
+                err = format_exc().strip()
+                err = err.replace('\n', '\n{W}{!} {W}   ')
+                err = err.replace('  File', '{W}{D}File')
+                err = err.replace('  Exception: ', '{R}Exception: {O}')
+                Color.pl(err)
+        except KeyboardInterrupt as e:
+            raise e
+
+        print(' ')
+
+    def run(self):
+
+        try:
+
+            try:
+                self.lexer = get_lexer_for_filename(Configuration.filename)
+            except:
+                self.lexer = None
+
+            with open(Configuration.filename, 'rb') as f:
+                data = f.read()
+
+            self.print_formatted(data=data, title=('{O}File: {G}%s{W}' % Configuration.filename))
 
         except Exception as e:
             Color.pl("\n{!} {R}Error: {O}%s" % str(e))
