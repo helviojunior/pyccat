@@ -1,5 +1,5 @@
-__version__ = '0.1.12'
-__version_tuple__ = version_tuple = (0, 1, 12)
+__version__ = '0.1.13'
+__version_tuple__ = version_tuple = (0, 1, 13)
 __title__ = "pyccat"
 __description__ = "Colored Cat is a syntax highlighter file reader."
 __url__ = "https://github.com/helviojunior/pyccat"
