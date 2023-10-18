@@ -286,8 +286,6 @@ class ColorCat(object):
 
     @staticmethod
     def get_columns():
-        return 80
-
         if Configuration.out_file is not None:
             return 120
 
@@ -304,8 +302,8 @@ class ColorCat(object):
     @staticmethod
     def format_line(text: str, number_line: int, max_cols: int = 200) -> str:
         tab = 2
-        if max_cols < 120:
-            max_cols = 120
+        if max_cols < 50:
+            max_cols = 50
         if len(ColorCat.escape_ansi(text)) < max_cols:
             return text
 
@@ -331,7 +329,7 @@ class ColorCat(object):
             first_line = True
             while c <= len(text):
                 p = text[o:c]
-                while len(ColorCat.escape_ansi(p)) < size:
+                while len(ColorCat.escape_ansi(p)) + number_line + diff < size:
                     c += 1
                     p = text[o:c]
                     if o + c >= len(text):
