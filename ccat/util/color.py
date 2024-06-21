@@ -43,13 +43,16 @@ class Color(object):
         Example:
             Color.p("{R}This text is red. {W} This text is white")
         '''
-        out.write(Color.s(text))
-        out.flush()
-        if '\r' in text:
-            text = text[text.rfind('\r')+1:]
-            Color.last_sameline_length = len(text)
-        else:
-            Color.last_sameline_length += len(text)
+        try:
+            out.write(Color.s(text))
+            out.flush()
+            if '\r' in text:
+                text = text[text.rfind('\r')+1:]
+                Color.last_sameline_length = len(text)
+            else:
+                Color.last_sameline_length += len(text)
+        except BrokenPipeError:
+            pass
 
     @staticmethod
     def pl(text, out=sys.stdout):

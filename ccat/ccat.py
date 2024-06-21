@@ -252,7 +252,7 @@ class ColorCat(object):
         except KeyboardInterrupt as e:
             raise e
 
-        print(' ')
+        Color.pl(' ')
 
     def run(self):
 
@@ -282,7 +282,7 @@ class ColorCat(object):
         except KeyboardInterrupt as e:
             raise e
 
-        print(' ')
+        Color.pl(' ')
 
     @staticmethod
     def get_columns():
@@ -302,6 +302,11 @@ class ColorCat(object):
     @staticmethod
     def format_line(text: str, number_line: int, max_cols: int = 200) -> str:
         tab = 2
+        try:
+            max_cols = int(max_cols)
+        except:
+            max_cols = 50
+
         if max_cols < 50:
             max_cols = 50
         if len(ColorCat.escape_ansi(text)) < max_cols:

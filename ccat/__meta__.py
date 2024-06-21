@@ -1,4 +1,4 @@
-__version__ = '0.1.13'
+__version__ = '0.1.14'
 __version_tuple__ = version_tuple = (0, 1, 13)
 __title__ = "pyccat"
 __description__ = "Colored Cat is a syntax highlighter file reader."
