@@ -145,11 +145,13 @@ class ColorCat(object):
                 continue
             if visible >= budget:
                 # close this chunk and re-open the same style on the next one,
-                # indented to line up under the original line's content
+                # indented to line up under the original line's content. Start
+                # with a reset so the leading indent spaces survive tabulate's
+                # whitespace stripping (it stops at the first non-space char).
                 if active != '':
                     cur += RESET
                 lines.append(cur)
-                cur = cont_prefix + active
+                cur = RESET + cont_prefix + active
                 visible = 0
                 budget = width - len(cont_prefix)
                 if budget < 10:
