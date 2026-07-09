@@ -129,11 +129,16 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r tests/requirements-test.txt
 
+
       - name: Change Package version
         run: |
-          oldv=$( grep '__version__' ccat/__meta__.py | grep -oE '[0-9\.]+')
-          current=$(date '+%Y%m%d%H%M%S')
-          meta=$(cat ccat/__meta__.py | sed "s/__version__.*/__version__ = '"${oldv}"-"${current}"'/")
+          VER=$(echo "${{ steps.latest_tag.outputs.tag }}" | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
+          if [ -z "$VER" ]; then
+            VER="0.0.0"
+          fi
+          BUILDDT=$(date '+%Y%m%d%H%M%S')
+          GITHASH=$(git rev-parse --short HEAD)
+          meta=$(cat ccat/__meta__.py | sed "s/__version__.*/__version__ = '"${VER}"-"${BUILDDT}"'/" | sed "s/__build__.*/__build__ = 0x"${GITHASH}"/")
           echo "$meta" > ccat/__meta__.py
 
       - name: Install ccat
