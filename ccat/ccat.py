@@ -172,7 +172,10 @@ class ColorCat(object):
             # readable image with some breathing room around the content
             o = Ansi2Image(0, 0, font_name=Ansi2Image.get_default_font_name(),
                            font_size=18, line_height=1.15)
-            o.loads(text)
+            # trailing spaces give the content (and borders) some room on the
+            # right so nothing touches the edge of the image
+            img_text = '\n'.join('%s  ' % line for line in text.split('\n'))
+            o.loads(img_text)
             o.min_margin = 26
             o.calc_size()
             o.save_image(Configuration.out_file, format=Configuration.format)
