@@ -114,6 +114,12 @@ class ColorCat(object):
         if len(ColorCat.escape_ansi(text)) <= width:
             return [text]
 
+        # keep the original line's leading indentation on the wrapped rows
+        # so they line up under the original line's content
+        visible_text = ColorCat.escape_ansi(text)
+        indent = len(visible_text) - len(visible_text.lstrip(' '))
+        cont_prefix = ' ' * indent
+
         ansi_re = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]')
         reset_re = re.compile(r'\x1B\[(0|00|39|49)?m')
         RESET = '\x1b[0m'
@@ -122,6 +128,7 @@ class ColorCat(object):
         cur = ''
         active = ''  # SGR codes currently in effect, carried to continuation rows
         visible = 0
+        budget = width  # first row uses the full width
         i = 0
         n = len(text)
         while i < n:
@@ -136,13 +143,17 @@ class ColorCat(object):
                     active += code
                 i = m.end()
                 continue
-            if visible >= width:
-                # close this chunk and re-open the same style on the next one
+            if visible >= budget:
+                # close this chunk and re-open the same style on the next one,
+                # indented to line up under the original line's content
                 if active != '':
                     cur += RESET
                 lines.append(cur)
-                cur = active
+                cur = cont_prefix + active
                 visible = 0
+                budget = width - len(cont_prefix)
+                if budget < 10:
+                    budget = 10
             cur += text[i]
             visible += 1
             i += 1
