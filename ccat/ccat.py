@@ -97,6 +97,49 @@ class ColorCat(object):
         pattern = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]')
         return pattern.sub('', line)
 
+    @staticmethod
+    def wrap_ansi(text: str, width: int) -> list:
+        # Wrap a highlighted (ANSI-colored) line at a given *visible* width,
+        # keeping the escape sequences intact. Returns the list of chunks so
+        # each one can be rendered as its own aligned table row (instead of
+        # letting the terminal wrap the overflow to column 0).
+        try:
+            width = int(width)
+        except Exception:
+            return [text]
+
+        if width < 10:
+            width = 10
+
+        if len(ColorCat.escape_ansi(text)) <= width:
+            return [text]
+
+        ansi_re = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]')
+        lines = []
+        cur = ''
+        visible = 0
+        i = 0
+        n = len(text)
+        while i < n:
+            m = ansi_re.match(text, i)
+            if m:
+                # copy the escape sequence without counting it as visible
+                cur += m.group(0)
+                i = m.end()
+                continue
+            if visible >= width:
+                lines.append(cur)
+                cur = ''
+                visible = 0
+            cur += text[i]
+            visible += 1
+            i += 1
+
+        if cur != '':
+            lines.append(cur)
+
+        return lines if lines else [text]
+
     @classmethod
     def output(cls, text):
         print(text)
@@ -204,29 +247,23 @@ class ColorCat(object):
                     max_c2_size = size - 10 - mc
 
                     header = ['', title]
-                    data = [
-                        (Color.s(' {W}{O}{D}%s{W} ' % ColorCat.format_line_number(i + 1, mc)), l)
-                        if ColorCat.is_valid(i + 1) else dot_line
-                        for i, l in enumerate(ldata)
-                        if ColorCat.is_valid(i + 1) or ColorCat.is_dot(i + 1)
-                    ]
+                    empty_num = Color.s(' {W}%s{W} ' % (' ' * mc))
+                    data = []
+                    for i, l in enumerate(ldata):
+                        if ColorCat.is_valid(i + 1):
+                            # long lines are split into aligned continuation rows
+                            chunks = ColorCat.wrap_ansi(l, max_c2_size)
+                            num = Color.s(' {W}{O}{D}%s{W} ' % ColorCat.format_line_number(i + 1, mc))
+                            data.append((num, chunks[0]))
+                            for chunk in chunks[1:]:
+                                data.append((empty_num, chunk))
+                        elif ColorCat.is_dot(i + 1):
+                            data.append(dot_line)
 
                     if not ColorCat.is_valid(len(ldata)):
                         data += [dot_line]
 
-                    cols = {}
-
-                    # Available only at v0.9.0 and upper
-                    try:
-                        from tabulate.version import __version_tuple__ as tabv
-                        if (tabv[0] > 0) or (tabv[0] == 0 and tabv[1] >= 9):
-                            cols = dict(
-                                maxcolwidths=[None, max_c2_size]
-                            )
-                    except Exception as e:
-                        pass
-
-                    self.output(tabulate(data, header, tablefmt='ccat', **cols))
+                    self.output(tabulate(data, header, tablefmt='ccat'))
 
         except Exception as e:
             Color.pl("\n{!} {R}Error: {O}%s" % str(e))
