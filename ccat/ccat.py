@@ -115,21 +115,33 @@ class ColorCat(object):
             return [text]
 
         ansi_re = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]')
+        reset_re = re.compile(r'\x1B\[(0|00|39|49)?m')
+        RESET = '\x1b[0m'
+
         lines = []
         cur = ''
+        active = ''  # SGR codes currently in effect, carried to continuation rows
         visible = 0
         i = 0
         n = len(text)
         while i < n:
             m = ansi_re.match(text, i)
             if m:
-                # copy the escape sequence without counting it as visible
-                cur += m.group(0)
+                code = m.group(0)
+                cur += code
+                # track the active color/style so a mid-token wrap keeps it
+                if reset_re.fullmatch(code):
+                    active = ''
+                else:
+                    active += code
                 i = m.end()
                 continue
             if visible >= width:
+                # close this chunk and re-open the same style on the next one
+                if active != '':
+                    cur += RESET
                 lines.append(cur)
-                cur = ''
+                cur = active
                 visible = 0
             cur += text[i]
             visible += 1
