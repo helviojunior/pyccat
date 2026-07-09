@@ -172,10 +172,17 @@ class ColorCat(object):
             # readable image with some breathing room around the content
             o = Ansi2Image(0, 0, font_name=Ansi2Image.get_default_font_name(),
                            font_size=18, line_height=1.15)
-            # trailing spaces give the content (and borders) some room on the
-            # right so nothing touches the edge of the image
-            img_text = '\n'.join('%s  ' % line for line in text.split('\n'))
-            o.loads(img_text)
+            # extend the horizontal bars 4 chars past the content and give the
+            # content itself a little right padding, so nothing touches the edge
+            border_chars = set('─┬┼┴━')
+            img_lines = []
+            for line in text.split('\n'):
+                vis = ColorCat.escape_ansi(line).strip()
+                if vis != '' and all(ch in border_chars for ch in vis):
+                    img_lines.append(line + Color.s('{GR}────{W}'))
+                else:
+                    img_lines.append('%s  ' % line)
+            o.loads('\n'.join(img_lines))
             o.min_margin = 26
             o.calc_size()
             o.save_image(Configuration.out_file, format=Configuration.format)
