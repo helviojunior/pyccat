@@ -171,7 +171,7 @@ class ColorCat(object):
             # larger font + a bit of line spacing render a sharper, more
             # readable image with some breathing room around the content
             o = Ansi2Image(0, 0, font_name=Ansi2Image.get_default_font_name(),
-                           font_size=18, line_height=1.3)
+                           font_size=18, line_height=1.15)
             o.loads(text)
             o.min_margin = 26
             o.calc_size()
