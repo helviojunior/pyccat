@@ -55,7 +55,7 @@ jobs:
           flake8 . --count --ignore=E1,E2,E3,E501,W291,W293 --exit-zero --max-complexity=65 --max-line-length=127 --statistics
 
   test:
-    name: Run unit tests and build wheel
+    name: Run unit tests
     needs: lint
     runs-on: ${{ matrix.os }}
     if:

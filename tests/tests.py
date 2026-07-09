@@ -1,7 +1,7 @@
 #reference: https://medium.com/assertqualityassurance/tutorial-de-pytest-para-iniciantes-cbdd81c6d761
 import codecs
 
-import pytest, sys
+import sys
 
 from ccat.ccat import ColorCat
 from ccat.util.color import Color

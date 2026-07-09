@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 import errno
-import os, sys
+import os
+import sys
 from pathlib import Path
 
 from .util.logger import Logger
@@ -9,7 +10,7 @@ from .__meta__ import __version__
 
 try:
     from pygments.styles import get_style_by_name
-except (ValueError, ImportError) as e:
+except (ValueError, ImportError):
     Logger.pl('{!} {R}Error: library {O}pygments{R} not found{W}\n     Install with {O}pip3 install Pygments{W} command.')
     sys.exit(3)
 
@@ -108,8 +109,8 @@ class Configuration(object):
             exit(1)
 
         try:
-            with open(Configuration.filename, 'r') as f:
-                # file opened for writing. write to it here
+            with open(Configuration.filename, 'r'):
+                # file opened only to check it is readable
                 pass
         except IOError as x:
             if x.errno == errno.EACCES:
@@ -151,7 +152,7 @@ class Configuration(object):
                     start = 0
                     try:
                         start = int(f'0{i_start}')
-                    except:
+                    except Exception:
                         Logger.pl(
                             '{!} {R}error: could not convert {O}%s{R} from {O}%s{R} to an integer value {W}\r\n' % (
                                 i_start, filter))
@@ -159,7 +160,7 @@ class Configuration(object):
 
                     try:
                         end = int(f'0{i_end}')
-                    except:
+                    except Exception:
                         Logger.pl(
                             '{!} {R}error: could not convert {O}%s{R} from {O}%s{R} to an integer value {W}\r\n' % (
                                 i_end, filter))
@@ -179,7 +180,7 @@ class Configuration(object):
                     start = 0
                     try:
                         start = int(f'0{i_start}')
-                    except:
+                    except Exception:
                         Logger.pl(
                             '{!} {R}error: could not convert {O}%s{R} from {O}%s{R} to an integer value {W}\r\n' % (
                                 i_start, filter))
@@ -187,7 +188,7 @@ class Configuration(object):
 
                     try:
                         end = int(f'0{i_end}')
-                    except:
+                    except Exception:
                         Logger.pl(
                             '{!} {R}error: could not convert {O}%s{R} from {O}%s{R} to an integer value {W}\r\n' % (
                                 i_end, filter))

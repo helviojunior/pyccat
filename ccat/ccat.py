@@ -12,9 +12,7 @@ import codecs
 
 try:
     from pygments import highlight
-    from pygments.lexers import (get_lexer_by_name, get_lexer_for_filename, get_lexer_for_mimetype, guess_lexer)
-    from pygments.formatters import TerminalFormatter
-    from pygments.styles import get_style_by_name
+    from pygments.lexers import (get_lexer_by_name, get_lexer_for_filename, guess_lexer)
 except (ValueError, ImportError) as e:
     raise Exception('You may need to run ccat from the root directory (which includes README.md)', e)
 
@@ -24,7 +22,8 @@ except (ValueError, ImportError) as e:
     raise Exception('You may need to run ccat from the root directory (which includes README.md)', e)
 
 
-import sys, os
+import sys
+import os
 from .util.color import Color
 
 
@@ -199,16 +198,16 @@ class ColorCat(object):
                 if self.lexer is None:
                     try:
                         self.lexer = guess_lexer(data)
-                    except:
+                    except Exception:
                         self.lexer = get_lexer_by_name('text')
 
                 # try to read
                 try:
                     data = data.decode('utf-8-sig')
-                except:
+                except Exception:
                     try:
                         data = data.decode('utf-8')
-                    except:
+                    except Exception:
                         data = data.decode('latin-1')
 
                 if data.strip(' \r\n') == '':
@@ -246,8 +245,7 @@ class ColorCat(object):
 
                     data = [
                         (
-                                Color.s(' {W}%s{GR}:{W}  ' % ColorCat.format_line_number(i + 1, mc)) +
-                                ColorCat.format_line(l, c1_len, size)
+                                Color.s(' {W}%s{GR}:{W}  ' % ColorCat.format_line_number(i + 1, mc)) + ColorCat.format_line(l, c1_len, size)
                         )
                         if ColorCat.is_valid(i + 1) else dot_line
                         for i, l in enumerate(ldata)
@@ -312,7 +310,7 @@ class ColorCat(object):
 
             try:
                 self.lexer = get_lexer_for_filename(Configuration.filename)
-            except:
+            except Exception:
                 self.lexer = None
 
             with open(Configuration.filename, 'rb') as f:
@@ -343,10 +341,10 @@ class ColorCat(object):
 
         try:
             size = os.get_terminal_size().columns
-        except:
+        except Exception:
             try:
                 _, size = os.popen('stty size', 'r').read().split()
-            except:
+            except Exception:
                 size = 80
 
         return size
@@ -356,7 +354,7 @@ class ColorCat(object):
         tab = 2
         try:
             max_cols = int(max_cols)
-        except:
+        except Exception:
             max_cols = 50
 
         if max_cols < 50:
@@ -412,7 +410,7 @@ class ColorCat(object):
                 parts.append(text[o:])
 
             return ''.join(parts)
-        except:
+        except Exception:
             return text
 
 

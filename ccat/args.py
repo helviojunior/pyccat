@@ -3,7 +3,8 @@
 from argparse import _ArgumentGroup, Namespace
 from .util.color import Color
 
-import argparse, sys, os
+import argparse
+import sys
 
 
 class Arguments(object):
@@ -44,13 +45,13 @@ class Arguments(object):
         flags.add_argument('-s', '--simple',
                            action='store_true',
                            default=False,
-                           dest=f'simple',
+                           dest='simple',
                            help=Color.s('just colorize the file content'))
 
         flags.add_argument('-nt', '--no-tabulated',
                            action='store_true',
                            default=False,
-                           dest=f'no_tab',
+                           dest='no_tab',
                            help=Color.s('do not show tab'))
 
         flags.add_argument('--style',
@@ -58,7 +59,7 @@ class Arguments(object):
                            metavar='[style name]',
                            type=str,
                            default='gruvbox-dark',
-                           dest=f'style',
+                           dest='style',
                            help=Color.s('pygments lib style name. (default: {G}gruvbox-dark{W}). See more at: https://pygments.org/styles/'))
 
         flags.add_argument('-l', '--lines',
@@ -66,7 +67,7 @@ class Arguments(object):
                            metavar='[filter]',
                            type=str,
                            default='',
-                           dest=f'line_filter',
+                           dest='line_filter',
                            help=Color.s('return only selected lines ({W}{D}ex1:{G} 5:13 {W}{D}or ex2: {G}50: {W}{D}or ex3: {G}:100{W})'))
 
         flags.add_argument('-hl', '--highlight-lines',
@@ -74,14 +75,14 @@ class Arguments(object):
                            metavar='[filter]',
                            type=str,
                            default='',
-                           dest=f'highlight_line_filter',
+                           dest='highlight_line_filter',
                            help=Color.s('highlight only selected lines ({W}{D}ex1:{W}{G} 5:13 {W}{D}or ex2: {W}{G}50: {W}{D}or ex3: {W}{G}:100{W})'))
 
         flags.add_argument('--output-img',
                            action='store',
                            metavar='[filename]',
                            type=str,
-                           dest=f'out_file',
+                           dest='out_file',
                            help=Color.s('image output file.'))
 
         flags.add_argument('-h', '--help',
@@ -98,5 +99,5 @@ class Arguments(object):
         flags.add_argument('--version',
                            action='store_true',
                            default=False,
-                           dest=f'version',
+                           dest='version',
                            help=Color.s('show current version'))

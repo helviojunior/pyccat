@@ -18,7 +18,7 @@ class Logger(object):
             try:
                 with open(Logger.out_file, "a") as text_file:
                     text_file.write(Color.sc(text) + '\n')
-            except:
+            except Exception:
                 pass
 
     @staticmethod
@@ -30,7 +30,7 @@ class Logger(object):
             try:
                 with open(Logger.out_file, "a") as text_file:
                     text_file.write(Color.sc(text) + '\n')
-            except:
+            except Exception:
                 pass
 
     @staticmethod
@@ -41,7 +41,7 @@ class Logger(object):
             try:
                 with open(Logger.out_file, "a") as text_file:
                     text_file.write(Color.sc(text) + '\n')
-            except:
+            except Exception:
                 Color.pl(text)
         else:
             Color.pl(text)
