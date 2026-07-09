@@ -129,6 +129,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r tests/requirements-test.txt
 
+      - name: Get latest tag
+        id: latest_tag
+        uses: actions-ecosystem/action-get-latest-tag@v1
+        with:
+          semver_only: true
 
       - name: Change Package version
         run: |
