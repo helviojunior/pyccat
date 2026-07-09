@@ -168,8 +168,12 @@ class ColorCat(object):
     def output(cls, text):
         print(text)
         if Configuration.out_file is not None:
-            o = Ansi2Image(0, 0, font_name=Ansi2Image.get_default_font_name(), font_size=13)
+            # larger font + a bit of line spacing render a sharper, more
+            # readable image with some breathing room around the content
+            o = Ansi2Image(0, 0, font_name=Ansi2Image.get_default_font_name(),
+                           font_size=18, line_height=1.3)
             o.loads(text)
+            o.min_margin = 26
             o.calc_size()
             o.save_image(Configuration.out_file, format=Configuration.format)
 
